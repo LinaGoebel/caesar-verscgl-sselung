@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caesar-Verschlüsselung</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caesar+Dressing&family=Nanum+Myeongjo&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css?family=Caesar+Dressing:regular" rel="stylesheet" />
+    <script>
+        function caesarCipher(text, key) {
+            const shift = key % 26;/* notwendig, um sicherzustellen, dass die Verschiebung nicht größer als 26 ist. */
+            let encryptedText = '';//Die Deklaration der Variablen encryptedText, die den verschlüsselten (oder entschlüsselten) 
+                                   //Text enthalten wird.
+
+            for (let i = 0; i < text.length; i++) {
+                const currentCharacter = text[i];
+
+                if (currentCharacter.match(/[a-z]/i)) {/*Überprüfung, ob das aktuelle Zeichen ein Buchstabe ist 
+                    (irgendein Buchstabe des lateinischen Alphabets, unabhängig von der Groß- oder Kleinschreibun*/
+                    const charCode = currentCharacter.charCodeAt(0);
+
+                    // Große Buchstaben
+                    /* Diese Zeile fügt dem encryptedText ein Zeichen hinzu, das durch die Verschiebung des aktuellen Zeichens
+                    um einen bestimmten Wert (shift) berechnet wird. Es handelt sich dabei um eine Verschlüsselung 
+                     im Rahmen des lateinischen Alphabets (A-Z). */
+                    if (charCode >= 65 && charCode <= 90) {
+                        encryptedText += String.fromCharCode((charCode - 65 + shift + 26) % 26 + 65);
+                        /* 
+                        1. charCode - 65:
+
+Der charCode ist der numerische Wert des aktuellen Zeichens, z.B. 65 für 'A', 66 für 'B' usw.
+Indem wir 65 subtrahieren, verschieben wir diesen Wert so, dass 'A' auf 0 abgebildet wird, 'B' auf 1 und so weiter. Dies ist 
+notwendig, um den Index des Buchstabens innerhalb des Alphabets zu erhalten (0 für 'A', 1 für 'B' usw.).
+                        2. + shift:
+shift ist der Verschiebungswert, um den das aktuelle Zeichen im Alphabet verschoben werden soll. 
+Dies ist der Kern der Caesar-Verschlüsselung. 
+                        3. + 26:
+Das Hinzufügen von 26 stellt sicher, dass das Ergebnis der Berechnung immer positiv bleibt, 
+selbst wenn shift negativ ist (z.B. bei einer Entschlüsselung).
+                        4. % 26:
+Der Modulo-Operator % 26 sorgt dafür, dass das Ergebnis innerhalb des Bereichs von 0 bis 25 bleibt, 
+was den Buchstaben von 'A' bis 'Z' entspricht. Dies bedeutet, dass nach 'Z' wieder mit 'A' begonnen wird.
+                        5. + 65:
+Durch das Hinzufügen von 65 wird der berechnete Wert wieder in den Bereich der ASCII-Werte für Großbuchstaben (A bis Z) 
+verschoben. So wird aus dem numerischen Index wieder ein gültiger Buchstabe.
+                        6. String.fromCharCode(...):
+Diese Methode wandelt den berechneten Unicode-Wert zurück in ein Zeichen. Das Ergebnis ist ein neuer Buchstabe, 
+der durch die Verschiebung entstanden ist. 
+                        7. encryptedText += ...:
+Das += fügt dieses neu berechnete Zeichen an den encryptedText-String an.*/
+                    }
+                    // Kleine Buchstaben
+                    else if (charCode >= 97 && charCode <= 122) {
+                        encryptedText += String.fromCharCode((charCode - 97 + shift + 26) % 26 + 97);
+                    }
+                } else {
+                    encryptedText += currentCharacter; // Andere Zeichen bleiben unverändert
+                }
+            }
+            return encryptedText;
+        }
+        function validateKey() {
+    const keyInput = document.getElementById('key');
+    const key = parseInt(keyInput.value, 10);
+    if (key < -25 || key > 25) {
+        alert('Der Schlüssel muss zwischen -25 und 25 liegen.');
+    }
+}
+
+document.getElementById('key').addEventListener('input', validateKey);
+
+        function handleEncrypt() {
+            const text = document.getElementById('inputText').value;
+            const key = parseInt(document.getElementById('key').value);
+            const encryptedText = caesarCipher(text, key);
+            document.getElementById('outputText').value = encryptedText;
+        }
+
+        function handleDecrypt() {
+            const text = document.getElementById('inputText').value;
+            const key = parseInt(document.getElementById('key').value);
+            const decryptedText = caesarCipher(text, -key);
+            document.getElementById('outputText').value = decryptedText;
+        }
+
+    </script>
+</head>
+
+<body>
+    <h1>Caesar-Verschlüsselung</h1>
+    <header class="header">
+        <p class="intro-text">Hallo! Möchtest du einen geheimen Brief schreiben, 
+            den niemand außer dir versteht? Mit der Caesar-Verschlüsselung kannst du deinen Text ganz 
+            einfach verschlüsseln und sicherstellen, dass nur diejenigen mit dem richtigen Schlüssel
+            deine Nachricht lesen können!</p>
+
+            <section class="instructions">
+                <h2>Anleitung zur Caesar-Verschlüsselung</h2>
+                <ol>
+                    <li>Geben Sie den Text ein, den Sie verschlüsseln oder entschlüsseln möchten.</li>
+                    <li>Wählen Sie einen Schlüssel aus. Der Schlüssel bestimmt, um wie viele Stellen die Buchstaben im Alphabet verschoben werden.</li>
+                    <li>Klicken Sie auf "Verschlüsseln", um den Text zu verschlüsseln, oder auf "Entschlüsseln", um den Text zu entschlüsseln.</li>
+                    <li>Das Ergebnis wird im Feld "Ergebnis" angezeigt.</li>
+                </ol>
+                <p><strong>Beispiel:</strong> Mit dem Text "HALLO" und dem Schlüssel 3 wird der Text zu "KDOOR" verschlüsselt.</p>
+            </section>
+
+        <label for="inputText">Text:</label>
+        <input type="text" id="inputText" placeholder="Text eingeben">
+        <label for="key">Schlüssel:</label>
+        <p class="key-range">Gültige Schlüssel: -25 bis 25</p> 
+        <input type="number" id="key" placeholder="Schlüssel eingeben" min="-25" max="25">
+        <button onclick="handleEncrypt()">Verschlüsseln</button>
+        <button onclick="handleDecrypt()">Entschlüsseln</button>
+        <label for="outputText">Ergebnis:</label>
+        <input type="text" id="outputText" readonly> 
+
+        <p>Mehr über die <a href="https://de.wikipedia.org/wiki/Caesar-Verschl%C3%BCsselung" target="_blank" class="custom-link">Caesar-Verschlüsselung</a> erfahren.</p>
+    </header> 
+</body>
+</html>
